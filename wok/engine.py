@@ -199,18 +199,41 @@ class Engine(object):
             logging.info('Hook {0} not defined'.format(hook_name))
         return returns
 
-    def prepare_output(self):
+    def prepare_output(self, ignore_files=['source'], ignore_dirs=[]):
         """
         Prepare the output directory. Remove any contents there already, and
         then copy over the media files, if they exist.
         """
-        if os.path.isdir(self.options['output_dir']):
-            for name in os.listdir(self.options['output_dir']):
-                path = os.path.join(self.options['output_dir'], name)
-                if os.path.isfile(path):
-                    os.unlink(path)
-                else:
-                    shutil.rmtree(path)
+        #TODO: change this to use os.walk, and leave files alone that are not
+        #that should not be overwritten i.e. overwrite css/ js/ ect. but 
+        #other directories like source should be left alone
+        #TODO: ignore folders that start with a ./ like .git folder
+        output_dir = self.options['output_dir']
+        if os.path.isdir(output_dir):
+            for (path, dirs, files) in os.walk(output_dir):
+                #Don't delete or recurse down ignored directories
+                for i in ignore_dirs:
+                    if i in dirs:
+                        dirs.remove(i)
+                #Remove ignored files from the target range!
+                for f in ignore_files:
+                    if f in files:
+                        files.remove(i)
+                
+                #Blast away old crap!
+                for f in files:
+                    try:
+                        os.remove(f)
+                    except OSError:
+                        print "Cannont remore file %r" % f
+                for d in dirs:
+                    try:
+                        #Directory will not be removed if it contains
+                        #any files
+                        os.rmdir(d)
+                    except OSError:
+                        print "Cannot remove directory %r" % dir
+
         else:
             os.mkdir(self.options['output_dir'])
 
