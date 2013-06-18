@@ -213,26 +213,26 @@ class Engine(object):
                 for i in ignore_dirs:
                     if i in dirs:
                         dirs.remove(i)
-                        print "Ignoring %r" % i
+                        print "Ignoring %s" % i
                 #Remove ignored files from the target range!
                 for f in ignore_files:
                     if f in files:
                         files.remove(i)
-                        print "Ignoring %r" % i
+                        print "Ignoring %s" % i
                 
                 #Blast away old crap!
                 for f in files:
                     try:
                         os.remove(f)
                     except OSError:
-                        print "Cannont remore file %r" % f
+                        print "Cannont remore file %s" % f
                 for d in dirs:
                     try:
                         #Directory will not be removed if it contains
                         #any files
                         os.rmdir(d)
                     except OSError:
-                        print "Cannot remove directory %r" % dir
+                        print "Cannot remove directory %s" % dir
         else:
             os.mkdir(self.options['output_dir'])
 
