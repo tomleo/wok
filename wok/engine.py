@@ -199,15 +199,13 @@ class Engine(object):
             logging.info('Hook {0} not defined'.format(hook_name))
         return returns
 
-    def prepare_output(self, ignore_files=['source'], ignore_dirs=[]):
+    def prepare_output(self,
+                       ignore_files=['README.rst', 'config', 'requirements.txt'],
+                       ignore_dirs=['source', '.git']):
         """
         Prepare the output directory. Remove any contents there already, and
         then copy over the media files, if they exist.
         """
-        #TODO: change this to use os.walk, and leave files alone that are not
-        #that should not be overwritten i.e. overwrite css/ js/ ect. but 
-        #other directories like source should be left alone
-        #TODO: ignore folders that start with a ./ like .git folder
         output_dir = self.options['output_dir']
         if os.path.isdir(output_dir):
             for (path, dirs, files) in os.walk(output_dir):
@@ -215,10 +213,12 @@ class Engine(object):
                 for i in ignore_dirs:
                     if i in dirs:
                         dirs.remove(i)
+                        print "Ignoring %r" % i
                 #Remove ignored files from the target range!
                 for f in ignore_files:
                     if f in files:
                         files.remove(i)
+                        print "Ignoring %r" % i
                 
                 #Blast away old crap!
                 for f in files:
@@ -233,7 +233,6 @@ class Engine(object):
                         os.rmdir(d)
                     except OSError:
                         print "Cannot remove directory %r" % dir
-
         else:
             os.mkdir(self.options['output_dir'])
 
